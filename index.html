@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="SHEIKH SCIENTIFIC is a private, browser-based scientific calculator with dark and light themes.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<meta name="referrer" content="no-referrer">
+<title>SHEIKH SCIENTIFIC</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="app">
+<section class="calculator">
+  <header class="top">
+    <div class="brand"><div class="logo">Σ</div><div><h1>SHEIKH SCIENTIFIC</h1><div class="sub">SCIENTIFIC CALCULATOR</div></div></div>
+    <div class="actions"><button class="iconbtn" id="privacyBtn" type="button">Privacy</button><button class="iconbtn" id="themeBtn" aria-label="Toggle theme" type="button">☀</button></div>
+  </header>
+  <div class="display" aria-live="polite">
+    <div class="expression" id="expression">Ready for calculation</div>
+    <div class="result" id="result">0</div>
+  </div>
+  <div class="display-tools">
+    <div class="modegroup"><button class="modebtn active" id="degBtn" type="button" aria-pressed="true">DEG</button><button class="modebtn" id="radBtn" type="button" aria-pressed="false">RAD</button></div>
+    <div class="hint">Keyboard supported · Enter =</div><button class="iconbtn" id="copyResult" type="button">Copy result</button>
+  </div>
+  <div class="keys" id="keys">
+    <button class="key fn" data-value="sin(">sin</button><button class="key fn" data-value="cos(">cos</button><button class="key fn" data-value="tan(">tan</button><button class="key fn" data-value="log(">log</button><button class="key fn" data-value="ln(">ln</button>
+    <button class="key fn" data-value="asin(">sin⁻¹</button><button class="key fn" data-value="acos(">cos⁻¹</button><button class="key fn" data-value="atan(">tan⁻¹</button><button class="key fn" data-value="sqrt(">√</button><button class="key fn" data-value="^2">x²</button>
+    <button class="key fn" data-value="^">xʸ</button><button class="key fn" data-value="!">n!</button><button class="key fn" data-value="π">π</button><button class="key fn" data-value="e">e</button><button class="key fn" data-value="abs(">abs</button>
+    <button class="key fn" data-action="memory-clear">MC</button><button class="key fn" data-action="memory-recall">MR</button><button class="key fn" data-action="memory-add">M+</button><button class="key fn" data-action="memory-subtract">M−</button><button class="key fn" data-value="cbrt(">∛</button>
+    <button class="key danger" data-action="clear">AC</button><button class="key danger" data-action="delete">DEL</button><button class="key op" data-value="(">(</button><button class="key op" data-value=")">)</button><button class="key op" data-value="/">÷</button>
+    <button class="key" data-value="7">7</button><button class="key" data-value="8">8</button><button class="key" data-value="9">9</button><button class="key op" data-value="*">×</button><button class="key op" data-value="%" title="Remainder (modulo)" aria-label="Remainder (modulo)">%</button>
+    <button class="key" data-value="4">4</button><button class="key" data-value="5">5</button><button class="key" data-value="6">6</button><button class="key op" data-value="-">−</button><button class="key op" data-value="Ans">Ans</button>
+    <button class="key" data-value="1">1</button><button class="key" data-value="2">2</button><button class="key" data-value="3">3</button><button class="key op" data-value="+">+</button><button class="key equal" data-action="equals">=</button>
+    <button class="key zero" data-value="0">0</button><button class="key" data-value=".">.</button><button class="key op" data-value="×10^">×10ˣ</button>
+  </div>
+</section>
+<aside class="history">
+  <div class="history-head"><h2>Calculation History</h2><button class="clear-history" id="clearHistory" type="button">CLEAR HISTORY</button></div>
+  <div class="history-list" id="historyList"><div class="empty">Your calculations will appear here.<br>Start calculating ✦</div></div>
+  <footer class="foot">
+    <div class="foot-brand">SHEIKH SCIENTIFIC · PRIVATE BY DESIGN</div>
+    <div class="developer">Developed by <strong>Saad Sheikh</strong></div>
+    <div class="contact-links"><a href="tel:+8801622792592" aria-label="Call Saad Sheikh">+880 1622-792592</a><a href="mailto:ahmad.saad.8420@gmail.com" aria-label="Email Saad Sheikh">ahmad.saad.8420@gmail.com</a></div>
+    <div class="footer-actions"><button class="clear-history" id="footerPrivacy" type="button">Privacy Policy</button><span aria-hidden="true"> · </span><button class="clear-history" id="clearAllData" type="button">Clear all local data</button></div>
+    <div class="copyright">© 2026 Saad Sheikh</div>
+  </footer>
+</aside>
+</main>
+<section class="privacy-overlay" id="privacyDialog" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" hidden>
+  <div class="privacy-card">
+    <div class="privacy-head"><h2 id="privacyTitle">Privacy Policy</h2><button class="iconbtn" id="closePrivacy" type="button" aria-label="Close privacy policy">✕</button></div>
+    <p><strong>Last updated: November 18, 2026</strong></p>
+    <p>SHEIKH SCIENTIFIC is a browser-based scientific calculator. Calculations run on your device. No account is required.</p>
+    <h3>1. Information stored</h3>
+    <p>The app may store up to 40 calculation-history entries and your theme preference in this browser profile's LocalStorage. People using the same browser profile may see the same saved history. The app does not ask you to provide personal profile information. Avoid entering sensitive information in calculations because saved expressions may appear in your local history.</p>
+    <h3>2. How information is used</h3>
+    <p>Locally stored information is used only to display your calculation history and remember your theme. This version has no analytics, advertising, tracking pixels, login, or app-operated server calls.</p>
+    <h3>3. Information sharing</h3>
+    <p>The app does not send calculations or locally stored data to an app-operated server. Your browser, device, extensions, operating system, and any hosting provider may have their own data practices.</p>
+    <h3>4. Deleting your information</h3>
+    <p>Use “CLEAR HISTORY” to remove calculation history. Use “Clear all local data” to remove history and the saved theme preference. Clearing this site's browser data also removes locally stored information.</p>
+    <h3>5. Security</h3>
+    <p>The app uses a Content Security Policy and includes no third-party scripts or network APIs. LocalStorage is not encrypted; someone with access to your device or browser profile may be able to view it. Public deployments should use HTTPS and appropriate server security headers.</p>
+    <h3>6. Children's privacy</h3>
+    <p>The app does not require registration or request personal information. It is not designed to collect information from children.</p>
+    <h3>7. Changes and contact</h3>
+    <p>This policy may be updated if the app's features or data practices change. Developer: Saad Sheikh. Contact: <a href="mailto:ahmad.saad.8420@gmail.com">ahmad.saad.8420@gmail.com</a> or <a href="tel:+8801622792592">+880 1622-792592</a>.</p>
+    <p class="privacy-note">The developer's contact details are intentionally displayed on this page and will be visible to visitors if you publish it online.</p>
+  </div>
+</section>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="app.js" defer></script>
+</body>
+</html>
