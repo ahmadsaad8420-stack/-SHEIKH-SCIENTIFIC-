@@ -1,0 +1,10 @@
+{
+  "name": "SHEIKH SCIENTIFIC",
+  "short_name": "Sheikh Scientific",
+  "description": "A private, responsive scientific calculator.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220"
+}
