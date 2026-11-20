@@ -1,37 +1,48 @@
-# Security & Quality Review — SHEIKH SCIENTIFIC
+# Security & Quality Review — SHEIKH SCIENTIFIC (Edition 3)
 
 ## Scope
-This is a source review of the standalone HTML, CSS, JavaScript, and documentation. It is not a penetration test, formal security certification, or mathematical conformance test.
+Source review plus automated checks of the HTML, CSS, JavaScript, service worker, manifest and documentation. Not a penetration test or formal certification.
+
+## Security result
+No exploitable vulnerability was found. The app has no server, no accounts, no third-party code and no network calls.
+
+| Area | Status |
+|---|---|
+| Code execution | Safe. Expressions are parsed by a tokenizer and recursive-descent parser; no `eval`, `Function` or dynamic code. Inputs such as `alert(1)`, `constructor`, `__proto__` are rejected. |
+| XSS | Safe. History and results are written with `textContent`; no `innerHTML`. A tampered legacy history entry containing `<img onerror>` is shown as plain text (tested). |
+| CSP | `default-src 'none'` with same-origin scripts, styles, images, manifest and worker only; `connect-src 'none'`, `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`, `frame-src 'none'`. No console CSP violations in testing. |
+| Clickjacking | `frame-ancestors` cannot be set by a meta tag. **Fixed** by adding `_headers` with a real response-header CSP and `X-Frame-Options: DENY`. |
+| Other headers | Added `_headers`: HSTS, `nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy`, COOP, CORP, correct manifest MIME type, `no-cache` for `sw.js`. |
+| Denial of service | Expression length capped at 240 characters, factorial capped at 170, history capped at 40. |
+| Storage | LocalStorage access is wrapped in try/catch; stored history is validated for type and length before use. |
 
 ## Fixes in this edition
-- Recognize the `e` constant from the calculator button and keyboard.
-- Add a matching Σ browser-tab favicon and same-origin manifest metadata.
-- Expand scientific functions with floor, ceiling, rounding, exponential, and reciprocal operations.
-- Add a sign-toggle key and support implicit multiplication after a closing parenthesis (for example, `(2+3)4`).
-- Build history entries using DOM text nodes rather than HTML string insertion.
-- Start a fresh expression when a number is entered after `=` while allowing operators to continue from the result.
-- Treat tangent values at vertical asymptotes as a domain error instead of displaying a misleading floating-point result.
-- Clarify that `%` means remainder (modulo), not percentage.
-- Distinguish clearing calculation history from clearing all local app data.
-- Use an English Privacy Policy and keep keyboard focus inside the policy dialog while open.
-- Remove personal contact details and avoid public exposure of personal information.
-- Synchronize the browser theme-color metadata with the selected theme and expose angle-mode state to assistive technology.
-- Follow the device's `prefers-color-scheme` setting by default and when it changes, while keeping manual light/dark choices available and adding an explicit Auto control.
+Correctness
+- `6.626×10^-34` and any result below 1e-12 were displayed as `0`. Fixed (only floating-point noise such as `sin(180°)` or `0.1+0.2−0.3` is snapped to 0).
+- `2e`, `5!4` and `2Ans` returned an error. Parser rewritten with proper tokens and implicit multiplication.
+- `round(-2.5)` gave −2; now −3 (half away from zero).
+- The ± key broke expressions like `−(2)+(3)`. Fixed with bracket matching.
+- MR inserted a negative memory value without brackets (`2` then MR gave `2−5`). Now `2(−5)`.
+- Angles are reduced modulo 360° in DEG mode for better accuracy (`sin(390°) = 0.5`).
+- Reciprocal can no longer create an expression longer than the limit.
 
-## Privacy and deployment notes
-- Calculation history (up to 40 entries) is memory-only and disappears on refresh or close. Legacy `sheikhCalcHistory` entries are imported into memory on startup and are preserved until the user explicitly uses “CLEAR HISTORY” or “Clear all local data,” either of which removes the legacy key. The theme preference is stored in LocalStorage and is not encrypted.
-- Service-worker registration failures are logged to the browser console and shown with a brief status message instead of being silently ignored.
-- Scientific notation results are reusable as expressions, and the reciprocal key operates on the current value or previous answer with division-by-zero protection.
-- The Enter shortcut does not activate while keyboard focus is on an interactive control, and it is blocked while the privacy dialog is open.
-- The privacy dialog uses `aria-modal`, sets the rest of the app inert while open, restores focus on close, traps Tab focus, and supports Escape.
-- A same-origin service worker caches the app shell for offline use, with network-first navigation and cache-first static assets.
-- The app has no analytics, advertising, remote scripts, or app-operated API calls.
-- The meta CSP is defense-in-depth and is consistent with same-origin scripts, styles, manifest, and service worker. It cannot set `frame-ancestors`; public deployment therefore requires an HTTP response header because meta CSP support and host capabilities vary.
-- HTTPS is required for service workers outside localhost. Static hosting must serve `sw.js` and `site.webmanifest` with valid JavaScript/JSON MIME types and same-origin paths.
-- The web manifest contains no unsupported SVG-only install icon claim and no PNG install icons are packaged. This limits cross-browser installability and should not be described as a complete installable PWA; offline caching remains supported.
-- Clipboard support varies by browser and is best supported on HTTPS or localhost.
-- If data collection or server-side features are introduced, reassess the threat model and update the Privacy Policy before release.
-- The app is a static, client-side calculator: each visitor uses a separate browser-local history. Simultaneous visitor capacity depends on the chosen static host; the app itself does not provide accounts or shared cloud data.
+Service worker
+- Cache-first for scripts and styles could mix new HTML with old JS/CSS after an update. Replaced by network-first with offline fallback and a versioned cache.
 
-## Limitations
-A focused source and JavaScript syntax test was run, covering file references and the added privacy/offline implementation. No full browser compatibility, PWA install, CSP response-header, clipboard, or mathematical conformance suite has been run. Verify deployment headers and results independently before relying on them for safety-critical, financial, medical, or engineering decisions.
+Design and polish
+- Keypad rearranged: digits on the left, operators in one column, `=` at bottom right (the old layout wrapped operators unevenly).
+- Display shows `×`, `÷`, `−`; added M memory indicator; toast no longer hides behind the privacy dialog.
+- No dark flash for light-theme users (`theme-init.js`); `color-scheme` set for native controls.
+- Real PNG icons (192, 512, maskable, Apple touch) and a complete manifest, so the app is genuinely installable.
+- Accessibility labels for symbol keys, live region only on the result, readable minimum font sizes, hover effects only on devices with hover, `100dvh` for mobile browsers.
+- Privacy policy updated (offline cache, hosting logs, parser statement); `<noscript>` message and social/SEO meta tags added.
+- Source code reformatted into readable modules; CRLF line endings removed; unused CSS removed.
+
+## Verified by testing
+Node unit checks of 60 expressions (precision, precedence, errors, injection strings) and a Chromium end-to-end run: key flows, sign toggle, memory, history reuse, DEG/RAD, theme persistence, privacy dialog focus handling, clear-data, legacy-history injection, service-worker install and offline use, manifest and icon delivery, and zero console errors.
+
+## Remaining notes
+- Response headers only apply on a host that reads `_headers` (Netlify, Cloudflare Pages) or has equivalent configuration. Confirm after deployment.
+- Legacy history from an older version is still shown until the user clears it; this is documented in the policy.
+- The policy shows no contact address by design. Add one if the site is offered publicly.
+- Not tested: real-device Safari/Firefox, screen readers, automated accessibility audit.
